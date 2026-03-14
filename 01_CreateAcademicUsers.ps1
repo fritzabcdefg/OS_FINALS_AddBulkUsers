@@ -1,13 +1,13 @@
 #================================================================
 # TUPT Active Directory - Create Academic Department Users
-# Domain: tupt.com
+# Domain: tupt.edu.ph
 # Distributes 317 IT students equally across 19 academic programs
 #================================================================
 
 Import-Module ActiveDirectory
 
 # Configuration
-$Domain = "tupt.com"
+$Domain = "tupt.edu.ph"
 $DefaultPassword = "TuptStudent@2024"
 $SecurePassword = ConvertTo-SecureString $DefaultPassword -AsPlainText -Force
 $StudentsFile = "Reference Data\ALL_STUDENTS.txt"
@@ -34,25 +34,25 @@ $academicPrograms = @(
     @{ 
         Dept = "Basic-Art-Sciences"; 
         Program = "BTVTE-Electrical"; 
-        OUPath = "OU=BTVTE-Electrical,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=BTVTE-Electrical,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "BTVTE-Electrical-Users"
     },
     @{ 
         Dept = "Basic-Art-Sciences"; 
         Program = "BTVTE-Electronics"; 
-        OUPath = "OU=BTVTE-Electronics,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=BTVTE-Electronics,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "BTVTE-Electronics-Users"
     },
     @{ 
         Dept = "Basic-Art-Sciences"; 
         Program = "BTVTE-Computer-Hardware"; 
-        OUPath = "OU=BTVTE-Computer-Hardware,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=BTVTE-Computer-Hardware,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "BTVTE-Computer-Hardware-Users"
     },
     @{ 
         Dept = "Basic-Art-Sciences"; 
         Program = "BTVTE-Computer-Software"; 
-        OUPath = "OU=BTVTE-Computer-Software,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=BTVTE-Computer-Software,OU=Basic-Art-Sciences,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "BTVTE-Computer-Software-Users"
     },
     
@@ -60,31 +60,31 @@ $academicPrograms = @(
     @{ 
         Dept = "Electrical-Allied"; 
         Program = "Information-Technology"; 
-        OUPath = "OU=Information-Technology,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Information-Technology,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "IT-Users"
     },
     @{ 
         Dept = "Electrical-Allied"; 
         Program = "Electrical-Engineering"; 
-        OUPath = "OU=Electrical-Engineering,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Electrical-Engineering,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Electrical-Engineering-Users"
     },
     @{ 
         Dept = "Electrical-Allied"; 
         Program = "Electronics-Engineering"; 
-        OUPath = "OU=Electronics-Engineering,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Electronics-Engineering,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Electronics-Engineering-Users"
     },
     @{ 
         Dept = "Electrical-Allied"; 
         Program = "Instrumentation-Control-Tech"; 
-        OUPath = "OU=Instrumentation-Control-Tech,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Instrumentation-Control-Tech,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Instrumentation-Control-Users"
     },
     @{ 
         Dept = "Electrical-Allied"; 
         Program = "BET-Mechatronics"; 
-        OUPath = "OU=BET-Mechatronics,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=BET-Mechatronics,OU=Electrical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "BET-Mechatronics-Users"
     },
     
@@ -92,37 +92,37 @@ $academicPrograms = @(
     @{ 
         Dept = "Mechanical-Allied"; 
         Program = "Mechanical-Engineering-Tech"; 
-        OUPath = "OU=Mechanical-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Mechanical-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Mechanical-Engineering-Users"
     },
     @{ 
         Dept = "Mechanical-Allied"; 
         Program = "RAC-Engineering-Tech"; 
-        OUPath = "OU=RAC-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=RAC-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "RAC-Engineering-Users"
     },
     @{ 
         Dept = "Mechanical-Allied"; 
         Program = "Non-Destructive-Engineering-Tech"; 
-        OUPath = "OU=Non-Destructive-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Non-Destructive-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Non-Destructive-Engineering-Users"
     },
     @{ 
         Dept = "Mechanical-Allied"; 
         Program = "Electromechanical-Engineering-Tech"; 
-        OUPath = "OU=Electromechanical-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Electromechanical-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Electromechanical-Engineering-Users"
     },
     @{ 
         Dept = "Mechanical-Allied"; 
         Program = "Automotive-Engineering-Tech"; 
-        OUPath = "OU=Automotive-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Automotive-Engineering-Tech,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Automotive-Engineering-Users"
     },
     @{ 
         Dept = "Mechanical-Allied"; 
         Program = "BET-ElectroMechanical"; 
-        OUPath = "OU=BET-ElectroMechanical,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=BET-ElectroMechanical,OU=Mechanical-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "BET-ElectroMechanical-Users"
     },
     
@@ -130,25 +130,25 @@ $academicPrograms = @(
     @{ 
         Dept = "Civil-Allied"; 
         Program = "Civil-Engineering"; 
-        OUPath = "OU=Civil-Engineering,OU=Civil-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Civil-Engineering,OU=Civil-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Civil-Engineering-Users"
     },
     @{ 
         Dept = "Civil-Allied"; 
         Program = "Civil-Engineering-Tech"; 
-        OUPath = "OU=Civil-Engineering-Tech,OU=Civil-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Civil-Engineering-Tech,OU=Civil-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Civil-Engineering-Tech-Users"
     },
     @{ 
         Dept = "Civil-Allied"; 
         Program = "Environmental-Science"; 
-        OUPath = "OU=Environmental-Science,OU=Civil-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Environmental-Science,OU=Civil-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Environmental-Science-Users"
     },
     @{ 
         Dept = "Civil-Allied"; 
         Program = "Chemical-Engineering-Tech"; 
-        OUPath = "OU=Chemical-Engineering-Tech,OU=Civil-Allied,OU=Academic,DC=tupt,DC=com"; 
+        OUPath = "OU=Chemical-Engineering-Tech,OU=Civil-Allied,OU=Academic,DC=tupt,DC=edu.ph"; 
         GroupName = "Chemical-Engineering-Tech-Users"
     }
 )
@@ -181,7 +181,7 @@ foreach ($prog in $academicPrograms) {
     $groupExists = Get-ADGroup -Filter "Name -eq '$($prog.GroupName)'" -ErrorAction SilentlyContinue
     if (-not $groupExists) {
         try {
-            New-ADGroup -Name $prog.GroupName -GroupCategory Security -GroupScope Global -Path "OU=Academic,DC=tupt,DC=com" -Description "Users for $($prog.Program)"
+            New-ADGroup -Name $prog.GroupName -GroupCategory Security -GroupScope Global -Path "OU=Academic,DC=tupt,DC=edu.ph" -Description "Users for $($prog.Program)"
             Write-Success "  ✓ Created group: $($prog.GroupName)"
         }
         catch {

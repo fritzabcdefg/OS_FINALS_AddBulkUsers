@@ -1,13 +1,13 @@
 #================================================================
 # TUPT Active Directory - Create Administrative Department Users
-# Domain: tupt.com
+# Domain: tupt.edu.ph
 # Creates office structure and administrative users
 #================================================================
 
 Import-Module ActiveDirectory
 
 # Configuration
-$Domain = "tupt.com"
+$Domain = "tupt.edu.ph"
 $DefaultPassword = "TuptAdmin@2024"
 $SecurePassword = ConvertTo-SecureString $DefaultPassword -AsPlainText -Force
 $LogFile = "Logs\AdministrativeUsers_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
@@ -32,56 +32,56 @@ $adminOffices = @(
     @{
         OfficeName = "Registrars-Office";
         DisplayName = "Registrar's Office";
-        OUPath = "OU=Registrars-Office,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=Registrars-Office,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "Registrars-Office-Users";
         Description = "Registrar's Office Personnel"
     },
     @{
         OfficeName = "Directors-Office";
         DisplayName = "Director's Office";
-        OUPath = "OU=Directors-Office,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=Directors-Office,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "Directors-Office-Users";
         Description = "Director's Office Personnel"
     },
     @{
         OfficeName = "Research-Extension";
         DisplayName = "Research and Extension";
-        OUPath = "OU=Research-Extension,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=Research-Extension,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "Research-Extension-Users";
         Description = "Research and Extension Personnel"
     },
     @{
         OfficeName = "HR-Management-Office";
         DisplayName = "Human Resource and Management Office";
-        OUPath = "OU=HR-Management-Office,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=HR-Management-Office,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "HR-Management-Users";
         Description = "HR and Management Office Personnel"
     },
     @{
         OfficeName = "Finance-Office";
         DisplayName = "Finance Office";
-        OUPath = "OU=Finance-Office,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=Finance-Office,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "Finance-Office-Users";
         Description = "Finance Office Personnel"
     },
     @{
         OfficeName = "Supply-Procurement";
         DisplayName = "Supply and Procurement";
-        OUPath = "OU=Supply-Procurement,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=Supply-Procurement,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "Supply-Procurement-Users";
         Description = "Supply and Procurement Personnel"
     },
     @{
         OfficeName = "Records-Office";
         DisplayName = "Records Office";
-        OUPath = "OU=Records-Office,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=Records-Office,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "Records-Office-Users";
         Description = "Records Office Personnel"
     },
     @{
         OfficeName = "Library-Services";
         DisplayName = "Library Services";
-        OUPath = "OU=Library-Services,OU=Administrative,DC=tupt,DC=com";
+        OUPath = "OU=Library-Services,OU=Administrative,DC=tupt,DC=edu.ph";
         GroupName = "Library-Services-Users";
         Description = "Library Services Personnel"
     }
@@ -98,7 +98,7 @@ foreach ($office in $adminOffices) {
                 -Name $office.GroupName `
                 -GroupCategory Security `
                 -GroupScope Global `
-                -Path "OU=Administrative,DC=tupt,DC=com" `
+                -Path "OU=Administrative,DC=tupt,DC=edu.ph" `
                 -Description $office.Description
             Write-Success "  ✓ Created group: $($office.GroupName)"
         }

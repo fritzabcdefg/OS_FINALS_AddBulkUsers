@@ -1,6 +1,6 @@
 #================================================================
 # TUPT Active Directory - Create Organizational Unit Structure
-# Domain: tupt.com
+# Domain: tupt.edu.ph
 # Author: System Administrator
 # Date: 2026
 #================================================================
@@ -8,8 +8,8 @@
 Import-Module ActiveDirectory
 
 # Domain Configuration
-$Domain = "tupt.com"
-$DC1 = "DC=tupt,DC=com"
+$Domain = "tupt.edu.ph"
+$DC1 = "DC=tupt,DC=edu.ph"
 
 # Color-coded output
 function Write-Success { Write-Host $args -ForegroundColor Green }
