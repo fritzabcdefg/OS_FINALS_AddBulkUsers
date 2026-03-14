@@ -1,0 +1,13 @@
+Run the commands:
+
+Import-Module ActiveDirectory
+
+cd C:\Users\Administrator\Desktop\AddBulkUsers
+.\00_RUN_ALL_SCRIPTS.ps1
+
+Set-ExecutionPolicy RemoteSigned -Scope Process
+cd C:\Users\Administrator\Desktop\AddBulkUsers
+.\00_RUN_ALL_SCRIPTS.ps1
+
+.\00_RUN_ALL_SCRIPTS.ps1
+

@@ -30,15 +30,18 @@ $rootOUs = @(
 )
 
 foreach ($ouObj in $rootOUs) {
-    $ouExists = Get-ADOrganizationalUnit -Filter "Name -eq '$($ouObj.Name)' -and DistinguishedName -eq 'OU=$($ouObj.Name),$($ouObj.Path)'" -ErrorAction SilentlyContinue
+    $ouExists = Get-ADOrganizationalUnit -Filter "Name -eq '$($ouObj.Name)'" -SearchBase $ouObj.Path -SearchScope OneLevel -ErrorAction SilentlyContinue
     if (-not $ouExists) {
         try {
-            New-ADOrganizationalUnit -Name $ouObj.Name -Path $ouObj.Path
-            Write-Success "✓ Created OU: $($ouObj.Name)"
+            New-ADOrganizationalUnit -Name $ouObj.Name -Path $ouObj.Path -ErrorAction Stop
+            Write-Success "[OK] Created OU: $($ouObj.Name)"
         }
         catch {
-            Write-Warning "! OU may already exist: $($ouObj.Name)"
+            Write-Warning "! Failed to create OU $($ouObj.Name): $_"
         }
+    }
+    else {
+        Write-Info "  OU already exists: $($ouObj.Name)"
     }
 }
 
@@ -99,30 +102,36 @@ $academicDepartments = @(
 
 foreach ($dept in $academicDepartments) {
     $deptPath = "OU=$($dept.Name),OU=Academic,$DC1"
-    $deptExists = Get-ADOrganizationalUnit -Filter "Name -eq '$($dept.Name)'" -ErrorAction SilentlyContinue
+    $deptExists = Get-ADOrganizationalUnit -Filter "Name -eq '$($dept.Name)'" -SearchBase $dept.Path -SearchScope OneLevel -ErrorAction SilentlyContinue
     
     if (-not $deptExists) {
         try {
-            New-ADOrganizationalUnit -Name $dept.Name -Path $dept.Path
-            Write-Success "  ✓ Created Department: $($dept.DisplayName)"
+            New-ADOrganizationalUnit -Name $dept.Name -Path $dept.Path -ErrorAction Stop
+            Write-Success "  [OK] Created Department: $($dept.DisplayName)"
         }
         catch {
-            Write-Warning "  ! Department may already exist: $($dept.Name)"
+            Write-Warning "  ! Failed to create department $($dept.Name): $_"
         }
+    }
+    else {
+        Write-Info "  Department already exists: $($dept.Name)"
     }
     
     # Create Program OUs under each Department
     foreach ($program in $dept.Programs) {
-        $progExists = Get-ADOrganizationalUnit -Filter "Name -eq '$program' -and DistinguishedName -eq 'OU=$program,$deptPath'" -ErrorAction SilentlyContinue
+        $progExists = Get-ADOrganizationalUnit -Filter "Name -eq '$program'" -SearchBase $deptPath -SearchScope OneLevel -ErrorAction SilentlyContinue
         
         if (-not $progExists) {
             try {
-                New-ADOrganizationalUnit -Name $program -Path $deptPath
-                Write-Success "      ✓ Created Program: $program"
+                New-ADOrganizationalUnit -Name $program -Path $deptPath -ErrorAction Stop
+                Write-Success "      [OK] Created Program: $program"
             }
             catch {
-                Write-Warning "      ! Program may already exist: $program"
+                Write-Warning "      ! Failed to create program $program: $_"
             }
+        }
+        else {
+            Write-Info "      Program already exists: $program"
         }
     }
 }
@@ -146,16 +155,19 @@ $adminOffices = @(
 $adminPath = "OU=Administrative,$DC1"
 
 foreach ($office in $adminOffices) {
-    $officeExists = Get-ADOrganizationalUnit -Filter "Name -eq '$office'" -ErrorAction SilentlyContinue
+    $officeExists = Get-ADOrganizationalUnit -Filter "Name -eq '$office'" -SearchBase $adminPath -SearchScope OneLevel -ErrorAction SilentlyContinue
     
     if (-not $officeExists) {
         try {
-            New-ADOrganizationalUnit -Name $office -Path $adminPath
-            Write-Success "  ✓ Created Office: $office"
+            New-ADOrganizationalUnit -Name $office -Path $adminPath -ErrorAction Stop
+            Write-Success "  [OK] Created Office: $office"
         }
         catch {
-            Write-Warning "  ! Office may already exist: $office"
+            Write-Warning "  ! Failed to create office $office: $_"
         }
+    }
+    else {
+        Write-Info "  Office already exists: $office"
     }
 }
 
@@ -177,7 +189,7 @@ foreach ($group in $groups) {
     if (-not $groupExists) {
         try {
             New-ADGroup -Name $group.Name -GroupCategory $group.GroupCategory -GroupScope $group.GroupScope -Path $groupPath -Description $group.Description
-            Write-Success "  ✓ Created Group: $($group.Name)"
+            Write-Success "  [OK] Created Group: $($group.Name)"
         }
         catch {
             Write-Warning "  ! Group may already exist: $($group.Name)"
@@ -187,7 +199,7 @@ foreach ($group in $groups) {
 
 Write-Info ""
 Write-Info "================================================"
-Write-Success "✓ Organizational Unit Structure Created Successfully!"
+Write-Success "[OK] Organizational Unit Structure Created Successfully!"
 Write-Info "================================================"
 Write-Info ""
 Write-Info "Next Steps:"

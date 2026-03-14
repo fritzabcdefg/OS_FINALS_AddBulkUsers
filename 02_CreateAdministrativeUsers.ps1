@@ -100,7 +100,7 @@ foreach ($office in $adminOffices) {
                 -GroupScope Global `
                 -Path "OU=Administrative,DC=tupt,DC=com" `
                 -Description $office.Description
-            Write-Success "  ✓ Created group: $($office.GroupName)"
+            Write-Success "  [OK] Created group: $($office.GroupName)"
         }
         catch {
             Write-Warning "  ! Group creation failed: $($office.GroupName) - $_"
@@ -125,7 +125,7 @@ Write-Info ""
 function Create-SampleAdministrativeUsers {
     Write-Info "Creating sample administrative users..."
     
-    # Sample administrative staff data
+    # Sample administrative staff data with office assignments
     $sampleUsers = @(
         @{ LastName = "SMITH"; FirstName = "JOHN"; Office = "Registrars-Office"; Gender = "M" },
         @{ LastName = "GARCIA"; FirstName = "MARIA"; Office = "Registrars-Office"; Gender = "F" },
@@ -149,7 +149,14 @@ function Create-SampleAdministrativeUsers {
     $usersFailed = 0
     
     foreach ($user in $sampleUsers) {
+        # Get the office OU path
         $office = $adminOffices | Where-Object { $_.OfficeName -eq $user.Office }
+        
+        if (-not $office) {
+            Write-Warning "  ! Office not found: $($user.Office)"
+            $usersFailed++
+            continue
+        }
         
         $fullName = "$($user.FirstName) $($user.LastName)"
         $samAccountName = "$($user.FirstName.Substring(0,1)).$($user.LastName)".ToLower() -replace '[^a-z0-9._-]', ''
@@ -180,11 +187,11 @@ function Create-SampleAdministrativeUsers {
             # Add to office group
             Add-ADGroupMember -Identity $office.GroupName -Members $samAccountName -ErrorAction SilentlyContinue
             
-            Write-Success "  ✓ Created: $fullName ($samAccountName) [$($user.Gender)]"
+            Write-Success "  [OK] Created: $fullName ($samAccountName) in $($user.Office) [$($user.Gender)]"
             $usersCreated++
         }
         catch {
-            Write-Error-Log "  ! Failed to create user $fullName - $_"
+            Write-Error-Log "  ! Failed to create user $fullName in $($user.Office) - $_"
             $usersFailed++
         }
     }
@@ -246,7 +253,7 @@ function Import-AdministrativeUsersFromCSV {
             
             Add-ADGroupMember -Identity $office.GroupName -Members $samAccountName -ErrorAction SilentlyContinue
             
-            Write-Success "  ✓ Created: $fullName"
+            Write-Success "  [OK] Created: $fullName"
             $usersCreated++
         }
         catch {
@@ -271,7 +278,7 @@ Create-SampleAdministrativeUsers
 
 Write-Info ""
 Write-Info "=========================================="
-Write-Success "✓ Administrative infrastructure created!"
+Write-Success "[OK] Administrative infrastructure created!"
 Write-Info "=========================================="
 Write-Info ""
 Write-Info "To import additional users from CSV, use:"

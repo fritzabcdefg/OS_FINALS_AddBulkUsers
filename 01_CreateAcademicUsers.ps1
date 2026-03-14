@@ -182,7 +182,7 @@ foreach ($prog in $academicPrograms) {
     if (-not $groupExists) {
         try {
             New-ADGroup -Name $prog.GroupName -GroupCategory Security -GroupScope Global -Path "OU=Academic,DC=tupt,DC=com" -Description "Users for $($prog.Program)"
-            Write-Success "  ✓ Created group: $($prog.GroupName)"
+            Write-Success "  [OK] Created group: $($prog.GroupName)"
         }
         catch {
             Write-Warning "  ! Group creation failed: $($prog.GroupName) - $_"
@@ -200,7 +200,7 @@ $studentIndex = 0
 $usersCreated = 0
 $usersFailed = 0
 
-foreach ($progIndex = 0; $progIndex -lt $academicPrograms.Count; $progIndex++) {
+for ($progIndex = 0; $progIndex -lt $academicPrograms.Count; $progIndex++) {
     $program = $academicPrograms[$progIndex]
     $count = 0
     $maxStudents = $studentsPerProgram
@@ -219,7 +219,7 @@ foreach ($progIndex = 0; $progIndex -lt $academicPrograms.Count; $progIndex++) {
         $studentIndex++
         
         # Parse student line: LastName(s), FirstName(s) MiddleName(s), Gender
-        $parts = $studentLine -split ',(?=(?:[^"]|"[^"]*")*$)' # Regex split by comma outside quotes
+        $parts = $studentLine -split ',' 
         if ($parts.Count -lt 3) {
             Write-Warning "  ! Skipping malformed line: $studentLine"
             continue
@@ -261,9 +261,9 @@ foreach ($progIndex = 0; $progIndex -lt $academicPrograms.Count; $progIndex++) {
                 -CannotChangePassword $false
             
             # Add user to program group
-            Add-ADGroupMember -Identity $prog.GroupName -Members $samAccountName -ErrorAction SilentlyContinue
+            Add-ADGroupMember -Identity $program.GroupName -Members $samAccountName -ErrorAction SilentlyContinue
             
-            Write-Success "  ✓ Created: $fullName ($samAccountName) [$gender]"
+            Write-Success "  [OK] Created: $fullName ($samAccountName) [$gender]"
             $usersCreated++
         }
         catch {
@@ -285,4 +285,4 @@ Write-Info "  Failed: $usersFailed"
 Write-Info "  Log file: $LogFile"
 Write-Info "=============================================="
 Write-Info ""
-Write-Success "✓ Academic users created successfully!"
+Write-Success "[OK] Academic users created successfully!"
