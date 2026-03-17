@@ -9,7 +9,7 @@ Import-Module ActiveDirectory
 
 # Domain Configuration
 $Domain = "tupt.edu.ph"
-$DC1 = "DC=tupt,DC=edu.ph"
+$DC1 = "DC=tupt,DC=edu,DC=ph"
 
 # Color-coded output
 function Write-Success { Write-Host $args -ForegroundColor Green }
