@@ -1,7 +1,7 @@
 # TUPT Active Directory - Bulk User Creation Suite
 ## Windows Server 2008 Configuration Guide
 
-**Domain:** tupt.com  
+**Domain:** tupt.edu.ph  
 **Date Created:** 2026  
 **Total Students:** 317 (IT Programs)  
 **Total Programs:** 19 academic + 8 administrative = 27 units
@@ -178,7 +178,7 @@ If you need to run scripts individually:
 - **Full Name:** FirstName LastName
 - **Email:** username@tupt.com
 - **Default Password:** `TuptAdmin@2024`
-- **Location:** `OU=Office,OU=Administrative,DC=tupt,DC=com`
+- **Location:** `OU=Office,OU=Administrative,DC=tupt,DC=edu,DC=ph`
 - **Group Membership:** Office-specific security group
 
 ---

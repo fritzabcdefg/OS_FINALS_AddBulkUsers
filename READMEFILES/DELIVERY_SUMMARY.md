@@ -1,8 +1,8 @@
 # 🎉 TUPT Active Directory - Deployment Package Summary
 
 **Status:** ✅ COMPLETE & READY FOR DEPLOYMENT  
-**Date Created:** March 14, 2026  
-**Domain:** tupt.com  
+**Date Created:** March 18, 2026  
+**Domain:** tupt.edu.ph  
 **Total Users to Create:** 333 (317 academic + 16 administrative)  
 **Total Organizational Units:** 27
 
@@ -44,7 +44,7 @@
      - ✓ Assigns users to security groups
      - ✓ Handles duplicate usernames (auto-increment)
    - **Username Format:** firstname.lastname (e.g., john.smith)
-   - **Default Password:** TuptStudent@2024
+   - **Default Password:** TuptStudent@2026
    - **Estimated Runtime:** 5-15 minutes
    - **Output:** Detailed log with all user creation details
 
@@ -56,7 +56,7 @@
      - ✓ Includes functions to import more users from CSV
      - ✓ Separate password policy for admin accounts
    - **Username Format:** initial.lastname (e.g., j.smith)
-   - **Default Password:** TuptAdmin@2024
+   - **Default Password:** TuptAdmin@2026
    - **Estimated Runtime:** 1-3 minutes
    - **Features:** Can import additional staff via CSV file
 

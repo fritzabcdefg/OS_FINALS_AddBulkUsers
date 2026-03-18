@@ -11,7 +11,7 @@ Set-Location -Path (Split-Path -Path $MyInvocation.MyCommand.Path -Parent)
 
 # Configuration
 $Domain = "tupt.edu.ph"
-$DefaultPassword = "TuptStudent@2024"
+$DefaultPassword = "TuptStudent@2026"
 $SecurePassword = ConvertTo-SecureString $DefaultPassword -AsPlainText -Force
 $StudentsFile = "ALL_STUDENTS.txt"
 $LogFile = "Logs\AcademicUsers_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"

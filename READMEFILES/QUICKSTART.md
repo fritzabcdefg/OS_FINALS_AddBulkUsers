@@ -69,15 +69,15 @@ That's it! The script will:
 - **Distribution:** ~17 per program
 - **Username:** firstname.lastname (lowercase)
 - **Example:** john.smith
-- **Password:** TuptStudent@2024
-- **Location:** OU=Program,OU=Department,OU=Academic,DC=tupt,DC=com
+- **Password:** TuptStudent@2026
+- **Location:** OU=Program,OU=Department,OU=Academic,DC=tupt,DC=edu,DC=ph
 
 #### Administrative Users (16 sample)
 - **Source:** Sample data (included template.csv to add more)
 - **Username:** initials.lastname (lowercase)
 - **Example:** j.smith
-- **Password:** TuptAdmin@2024
-- **Location:** OU=Office,OU=Administrative,DC=tupt,DC=com
+- **Password:** TuptAdmin@2026
+- **Location:** OU=Office,OU=Administrative,DC=tupt,DC=edu,DC=ph
 
 ---
 

@@ -7,7 +7,7 @@
 
 ### Infrastructure Verification
 - [ ] Windows Server 2008 (or 2008 R2) is installed and running
-- [ ] Active Directory is installed and domain "tupt.com" exists
+- [ ] Active Directory is installed and domain "tupt.edu.ph" exists
 - [ ] Domain Controllers are online and replicating
 - [ ] Network connectivity verified to all DCs
 - [ ] Adequate disk space available on DC (~500 MB minimum)
