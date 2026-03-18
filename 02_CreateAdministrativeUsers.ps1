@@ -111,7 +111,7 @@ foreach ($office in $adminOffices) {
     }
 }
 
-$AdminStudentsFile = "Reference Data\ADMIN_STUDENTS.txt"
+$AdminStudentsFile = "ADMIN_STUDENTS.txt"
 
 function Create-AdministrativeUsersFromStudentLines {
     param(
@@ -214,7 +214,7 @@ Write-Info ""
 Write-Info "AUTOMATIC WORKFLOW (recommended):"
 Write-Info "  1. Run 01_CreateAcademicUsers.ps1 first"
 Write-Info "     - Creates 250 academic users"
-Write-Info "     - Saves remaining ~67 students to Reference Data\ADMIN_STUDENTS.txt"
+Write-Info "     - Saves remaining ~67 students to ADMIN_STUDENTS.txt"
 Write-Info ""
 Write-Info "  2. Run this script (02_CreateAdministrativeUsers.ps1)"
 Write-Info "     - Automatically creates admin users from ADMIN_STUDENTS.txt"
@@ -257,7 +257,7 @@ else {
     Write-Info "Attempting alternate approach: Using remaining students from ALL_STUDENTS.txt..."
     
     # Fallback: Read from ALL_STUDENTS.txt and use the last portion for admin users
-    $AllStudentsFile = "Reference Data\ALL_STUDENTS.txt"
+    $AllStudentsFile = "ALL_STUDENTS.txt"
     if (Test-Path $AllStudentsFile) {
         $allStudentsLines = @(Get-Content $AllStudentsFile)
         if ($allStudentsLines -and $allStudentsLines.Count -gt 0) {

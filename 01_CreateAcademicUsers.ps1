@@ -13,7 +13,7 @@ Set-Location -Path (Split-Path -Path $MyInvocation.MyCommand.Path -Parent)
 $Domain = "tupt.edu.ph"
 $DefaultPassword = "TuptStudent@2024"
 $SecurePassword = ConvertTo-SecureString $DefaultPassword -AsPlainText -Force
-$StudentsFile = "Reference Data\ALL_STUDENTS.txt"
+$StudentsFile = "ALL_STUDENTS.txt"
 $LogFile = "Logs\AcademicUsers_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 
 # Ensure log directory exists
@@ -183,7 +183,7 @@ if ($students.Count -gt $academicStudentCount) {
     Write-Info "  Administrative: $($adminStudents.Count) students"
     
     # Save admin students to file for 02_CreateAdministrativeUsers.ps1
-    $adminStudentsFile = "Reference Data\ADMIN_STUDENTS.txt"
+    $adminStudentsFile = "ADMIN_STUDENTS.txt"
     $adminStudents | Out-File -FilePath $adminStudentsFile -Encoding UTF8
     Write-Info "  Saved admin students to: $adminStudentsFile"
 }
@@ -198,7 +198,7 @@ if ($students.Count -le $reservedForAdmins) {
     $reservedForAdmins = 0
 }
 
-$adminStudentsFile = "Reference Data\ADMIN_STUDENTS.txt"
+$adminStudentsFile = "ADMIN_STUDENTS.txt"
 
 if ($reservedForAdmins -gt 0) {
     $adminStudents = $students[-$reservedForAdmins..-1]

@@ -22,8 +22,7 @@ Files should be in your "C:\Users\Administrator\Desktop"
 
 In desktop, the file should be organized like this:
 
-Reference Data (Folder)
-    -ALL_STUDENT.txt
+- ALL_STUDENTS.txt
 - 00_CreateOrganizationalUnits.ps1
 - 01_CreateAcademicUsers.ps1
 - 02_CreateAdministrativeUsers.ps1
