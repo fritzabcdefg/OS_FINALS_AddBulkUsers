@@ -1,0 +1,34 @@
+Run the commands:
+
+Import-Module ActiveDirectory
+
+cd C:\Users\Administrator\Desktop
+
+Set-ExecutionPolicy RemoteSigned -Scope Process
+
+.\00_CreateOrganizationalUnits.ps1
+.\01_CreateAcademicUsers.ps1
+.\02_CreateAdministrativeUsers.ps1
+.\03_AddComputersToOUs.ps1
+
+
+IF YOU WANT TO DELETE WHAT YOU CREATED, REFER TO THE COMMAND\FILE BELOW:
+//If you see errors, its fine. It still works the same tho.
+
+.\04_DeleteCreatedOUs.ps1
+
+
+Files should be in your "C:\Users\Administrator\Desktop"
+
+In desktop, the file should be organized like this:
+
+Reference Data (Folder)
+    -ALL_STUDENT.txt
+- 00_CreateOrganizationalUnits.ps1
+- 01_CreateAcademicUsers.ps1
+- 02_CreateAdministrativeUsers.ps1
+- 03_AddComputersToOUs.ps1
+- 04_DeleteCreatedOUs.ps1
+- powershell cmds.txt
+
+

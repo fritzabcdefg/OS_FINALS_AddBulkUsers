@@ -6,6 +6,9 @@
 
 Import-Module ActiveDirectory
 
+# Ensure the script runs from its own folder (so relative paths work)
+Set-Location -Path (Split-Path -Path $MyInvocation.MyCommand.Path -Parent)
+
 # Configuration
 $Domain = "tupt.edu.ph"
 $DefaultPassword = "TuptStudent@2024"
@@ -170,6 +173,42 @@ Write-Info "Total students loaded: $($students.Count)"
 Write-Info "Total academic programs: $($academicPrograms.Count)"
 Write-Info ""
 
+# Split students: first 250 for academic programs, remaining for administrative offices
+$academicStudentCount = 250
+if ($students.Count -gt $academicStudentCount) {
+    $adminStudents = @($students[$academicStudentCount..($students.Count - 1)])
+    $students = @($students[0..($academicStudentCount - 1)])
+    Write-Info "Splitting students:"
+    Write-Info "  Academic: $($students.Count) students"
+    Write-Info "  Administrative: $($adminStudents.Count) students"
+    
+    # Save admin students to file for 02_CreateAdministrativeUsers.ps1
+    $adminStudentsFile = "Reference Data\ADMIN_STUDENTS.txt"
+    $adminStudents | Out-File -FilePath $adminStudentsFile -Encoding UTF8
+    Write-Info "  Saved admin students to: $adminStudentsFile"
+}
+else {
+    Write-Warning "Total students ($($students.Count)) is less than or equal to $academicStudentCount."
+    Write-Warning "All students will be assigned to academic programs."
+}
+Write-Info ""
+
+if ($students.Count -le $reservedForAdmins) {
+    Write-Warning "Not enough students to reserve $reservedForAdmins for administrators; reserving 0."
+    $reservedForAdmins = 0
+}
+
+$adminStudentsFile = "Reference Data\ADMIN_STUDENTS.txt"
+
+if ($reservedForAdmins -gt 0) {
+    $adminStudents = $students[-$reservedForAdmins..-1]
+    $students = $students[0..($students.Count - $reservedForAdmins - 1)]
+    $adminStudents | Set-Content -Path $adminStudentsFile -Encoding UTF8
+    Write-Info "Reserved $reservedForAdmins students for administrative accounts (written to $adminStudentsFile)"
+} else {
+    Remove-Item -Path $adminStudentsFile -ErrorAction SilentlyContinue
+}
+
 # Calculate students per program
 $studentsPerProgram = [Math]::Ceiling($students.Count / $academicPrograms.Count)
 Write-Info "Distributing approximately $studentsPerProgram students per program"
@@ -182,7 +221,7 @@ foreach ($prog in $academicPrograms) {
     if (-not $groupExists) {
         try {
             New-ADGroup -Name $prog.GroupName -GroupCategory Security -GroupScope Global -Path "OU=Academic,DC=tupt,DC=edu,DC=ph" -Description "Users for $($prog.Program)"
-            Write-Success "  ✓ Created group: $($prog.GroupName)"
+            Write-Success "  Created group: $($prog.GroupName)"
         }
         catch {
             Write-Warning "  ! Group creation failed: $($prog.GroupName) - $_"
@@ -219,7 +258,7 @@ for ($progIndex = 0; $progIndex -lt $academicPrograms.Count; $progIndex++) {
         $studentIndex++
         
         # Parse student line: LastName(s), FirstName(s) MiddleName(s), Gender
-        $parts = $studentLine -split ',(?=(?:[^"]|"[^"]*")*$)' # Regex split by comma outside quotes
+        $parts = $studentLine -split ','
         if ($parts.Count -lt 3) {
             Write-Warning "  ! Skipping malformed line: $studentLine"
             continue
@@ -263,7 +302,7 @@ for ($progIndex = 0; $progIndex -lt $academicPrograms.Count; $progIndex++) {
             # Add user to program group
             Add-ADGroupMember -Identity $program.GroupName -Members $samAccountName -ErrorAction SilentlyContinue
             
-            Write-Success "  ✓ Created: $fullName ($samAccountName) [$gender]"
+            Write-Success "  Created: $fullName ($samAccountName) [$gender]"
             $usersCreated++
         }
         catch {
@@ -274,7 +313,7 @@ for ($progIndex = 0; $progIndex -lt $academicPrograms.Count; $progIndex++) {
         $count++
     }
     
-    Write-Info "  ├─ Assigned $count students to this program"
+    Write-Info "  - Assigned $count students to this program"
     Write-Info ""
 }
 
@@ -285,4 +324,4 @@ Write-Info "  Failed: $usersFailed"
 Write-Info "  Log file: $LogFile"
 Write-Info "=============================================="
 Write-Info ""
-Write-Success "✓ Academic users created successfully!"
+Write-Success "Academic users created successfully!"

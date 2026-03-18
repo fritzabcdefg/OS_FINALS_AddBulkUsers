@@ -6,6 +6,9 @@
 
 Import-Module ActiveDirectory
 
+# Ensure the script runs from its own folder (so relative paths work)
+Set-Location -Path (Split-Path -Path $MyInvocation.MyCommand.Path -Parent)
+
 # Configuration
 $Domain = "tupt.edu.ph"
 $DefaultPassword = "TuptAdmin@2024"
@@ -100,7 +103,7 @@ foreach ($office in $adminOffices) {
                 -GroupScope Global `
                 -Path "OU=Administrative,DC=tupt,DC=edu,DC=ph" `
                 -Description $office.Description
-            Write-Success "  ✓ Created group: $($office.GroupName)"
+            Write-Success "  Created group: $($office.GroupName)"
         }
         catch {
             Write-Warning "  ! Group creation failed: $($office.GroupName) - $_"
@@ -108,53 +111,54 @@ foreach ($office in $adminOffices) {
     }
 }
 
-Write-Info ""
-Write-Info "=========================================="
-Write-Info "Administrative User Creation Instructions"
-Write-Info "=========================================="
-Write-Info ""
-Write-Info "OPTION 1: Create Sample Administrative Users"
-Write-Info "Uncomment the function call at the end of this script"
-Write-Info ""
-Write-Info "OPTION 2: Import from CSV file"
-Write-Info "Create a CSV file with columns: LastName, FirstName, MiddleName, Office, Gender"
-Write-Info "Then run the CSV import function below"
-Write-Info ""
+$AdminStudentsFile = "Reference Data\ADMIN_STUDENTS.txt"
 
-# Function to create sample administrative users
-function Create-SampleAdministrativeUsers {
-    Write-Info "Creating sample administrative users..."
-    
-    # Sample administrative staff data
-    $sampleUsers = @(
-        @{ LastName = "SMITH"; FirstName = "JOHN"; Office = "Registrars-Office"; Gender = "M" },
-        @{ LastName = "GARCIA"; FirstName = "MARIA"; Office = "Registrars-Office"; Gender = "F" },
-        @{ LastName = "SANTOS"; FirstName = "CARLOS"; Office = "Directors-Office"; Gender = "M" },
-        @{ LastName = "REYES"; FirstName = "ISABEL"; Office = "Directors-Office"; Gender = "F" },
-        @{ LastName = "RIVERA"; FirstName = "JUAN"; Office = "Research-Extension"; Gender = "M" },
-        @{ LastName = "TORRES"; FirstName = "LUNA"; Office = "Research-Extension"; Gender = "F" },
-        @{ LastName = "TORRES"; FirstName = "MARK"; Office = "HR-Management-Office"; Gender = "M" },
-        @{ LastName = "FERNANDEZ"; FirstName = "ROSA"; Office = "HR-Management-Office"; Gender = "F" },
-        @{ LastName = "GONZALES"; FirstName = "ANTONIO"; Office = "Finance-Office"; Gender = "M" },
-        @{ LastName = "Lopez"; FirstName = "ANNA"; Office = "Finance-Office"; Gender = "F" },
-        @{ LastName = "MARTINEZ"; FirstName = "JOSE"; Office = "Supply-Procurement"; Gender = "M" },
-        @{ LastName = "HERNANDEZ"; FirstName = "MONICA"; Office = "Supply-Procurement"; Gender = "F" },
-        @{ LastName = "CRUZ"; FirstName = "RAFAEL"; Office = "Records-Office"; Gender = "M" },
-        @{ LastName = "NAVARRO"; FirstName = "CLARA"; Office = "Records-Office"; Gender = "F" },
-        @{ LastName = "VELASCO"; FirstName = "DANIEL"; Office = "Library-Services"; Gender = "M" },
-        @{ LastName = "MORALES"; FirstName = "SOFIA"; Office = "Library-Services"; Gender = "F" }
+function Create-AdministrativeUsersFromStudentLines {
+    param(
+        [string[]]$StudentLines
     )
-    
+
+    if (-not $StudentLines -or $StudentLines.Count -eq 0) {
+        Write-Warning "No administrative student entries found."
+        return
+    }
+
+    Write-Info "Creating administrative users from student list ($($StudentLines.Count) entries)..."
+
+    $officeIndex = 0
     $usersCreated = 0
     $usersFailed = 0
-    
-    foreach ($user in $sampleUsers) {
-        $office = $adminOffices | Where-Object { $_.OfficeName -eq $user.Office }
-        
-        $fullName = "$($user.FirstName) $($user.LastName)"
-        $samAccountName = "$($user.FirstName.Substring(0,1)).$($user.LastName)".ToLower() -replace '[^a-z0-9._-]', ''
+
+    # Ensure StudentLines is always an array
+    $studentArray = @()
+    foreach ($line in $StudentLines) {
+        if ($line -and $line.Trim().Length -gt 0) {
+            $studentArray += $line.Trim()
+        }
+    }
+
+    if ($studentArray.Count -eq 0) {
+        Write-Warning "No valid student entries found after filtering."
+        return
+    }
+
+    foreach ($line in $studentArray) {
+        $parts = $line -split ','
+        if ($parts.Count -lt 3) {
+            Write-Warning "  ! Skipping malformed line: $line"
+            continue
+        }
+
+        $lastName = $parts[0].Trim()
+        $fullName = $parts[1].Trim()
+        $gender = $parts[2].Trim()
+
+        $firstName = ($fullName -split ' ')[0]
+        $samAccountName = "$($firstName.Substring(0,1)).$lastName".ToLower() -replace '[^a-z0-9._-]', ''
         $userPrincipalName = "$samAccountName@$Domain"
-        
+        $office = $adminOffices[$officeIndex % $adminOffices.Count]
+        $officeIndex++
+
         # Check for duplicate username
         $counter = 1
         $originalSam = $samAccountName
@@ -162,25 +166,32 @@ function Create-SampleAdministrativeUsers {
             $samAccountName = "$originalSam$counter"
             $counter++
         }
-        
+
         try {
+            # Create the user in the administrative office OU
             New-ADUser `
                 -SamAccountName $samAccountName `
                 -UserPrincipalName $userPrincipalName `
                 -Name $fullName `
-                -GivenName $user.FirstName `
-                -Surname $user.LastName `
+                -GivenName $firstName `
+                -Surname $lastName `
                 -DisplayName $fullName `
                 -Path $office.OUPath `
                 -AccountPassword $SecurePassword `
                 -Enabled $true `
-                -PasswordNotRequired $false `
-                -CannotChangePassword $false
+                -ErrorAction Stop
+
+            Write-Success "  Created: $fullName ($samAccountName) [$gender] in $($office.OfficeName)"
             
-            # Add to office group
-            Add-ADGroupMember -Identity $office.GroupName -Members $samAccountName -ErrorAction SilentlyContinue
+            # Add user to the office security group
+            try {
+                Add-ADGroupMember -Identity $office.GroupName -Members $samAccountName -ErrorAction Stop
+                Write-Info "    Added to group: $($office.GroupName)"
+            }
+            catch {
+                Write-Warning "    ! Failed to add to group - $_"
+            }
             
-            Write-Success "  ✓ Created: $fullName ($samAccountName) [$($user.Gender)]"
             $usersCreated++
         }
         catch {
@@ -188,97 +199,91 @@ function Create-SampleAdministrativeUsers {
             $usersFailed++
         }
     }
-    
+
     Write-Info ""
-    Write-Info "Sample Users Summary:"
-    Write-Info "  Total Created: $usersCreated"
-    Write-Info "  Failed: $usersFailed"
-}
-
-# Function to import users from CSV file
-function Import-AdministrativeUsersFromCSV {
-    param(
-        [string]$CSVPath
-    )
-    
-    if (-not (Test-Path $CSVPath)) {
-        Write-Warning "CSV file not found: $CSVPath"
-        return
-    }
-    
-    Write-Info "Importing users from CSV: $CSVPath"
-    
-    $csvUsers = Import-Csv -Path $CSVPath
-    $usersCreated = 0
-    $usersFailed = 0
-    
-    foreach ($user in $csvUsers) {
-        $office = $adminOffices | Where-Object { $_.OfficeName -eq $user.Office }
-        
-        if (-not $office) {
-            Write-Warning "  ! Office not found: $($user.Office)"
-            continue
-        }
-        
-        $fullName = "$($user.FirstName) $($user.LastName)"
-        $samAccountName = "$($user.FirstName.Substring(0,1)).$($user.LastName)".ToLower() -replace '[^a-z0-9._-]', ''
-        $userPrincipalName = "$samAccountName@$Domain"
-        
-        # Check for duplicate username
-        $counter = 1
-        $originalSam = $samAccountName
-        while (Get-ADUser -Filter "SamAccountName -eq '$samAccountName'" -ErrorAction SilentlyContinue) {
-            $samAccountName = "$originalSam$counter"
-            $counter++
-        }
-        
-        try {
-            New-ADUser `
-                -SamAccountName $samAccountName `
-                -UserPrincipalName $userPrincipalName `
-                -Name $fullName `
-                -GivenName $user.FirstName `
-                -Surname $user.LastName `
-                -DisplayName $fullName `
-                -Path $office.OUPath `
-                -AccountPassword $SecurePassword `
-                -Enabled $true
-            
-            Add-ADGroupMember -Identity $office.GroupName -Members $samAccountName -ErrorAction SilentlyContinue
-            
-            Write-Success "  ✓ Created: $fullName"
-            $usersCreated++
-        }
-        catch {
-            Write-Error-Log "  ! Failed to create: $fullName - $_"
-            $usersFailed++
-        }
-    }
-    
-    Write-Info "CSV Import Summary:"
-    Write-Info "  Total Created: $usersCreated"
+    Write-Info "Administrative users summary:"
+    Write-Info "  Created: $usersCreated"
     Write-Info "  Failed: $usersFailed"
 }
 
 Write-Info ""
 Write-Info "=========================================="
-Write-Info "CREATING SAMPLE ADMINISTRATIVE USERS"
+Write-Info "Administrative User Creation Instructions"
 Write-Info "=========================================="
+Write-Info ""
+Write-Info "AUTOMATIC WORKFLOW (recommended):"
+Write-Info "  1. Run 01_CreateAcademicUsers.ps1 first"
+Write-Info "     - Creates 250 academic users"
+Write-Info "     - Saves remaining ~67 students to Reference Data\ADMIN_STUDENTS.txt"
+Write-Info ""
+Write-Info "  2. Run this script (02_CreateAdministrativeUsers.ps1)"
+Write-Info "     - Automatically creates admin users from ADMIN_STUDENTS.txt"
+Write-Info "     - Distributes ~8-9 users per office (67 / 8 offices)"
 Write-Info ""
 
-# Uncomment the line below to create sample users
-Create-SampleAdministrativeUsers
+
+# Function to create sample administrative users
+# (Removed - using automatic student data instead)
+
 
 Write-Info ""
 Write-Info "=========================================="
-Write-Success "✓ Administrative infrastructure created!"
+Write-Info "Administrative infrastructure created!"
 Write-Info "=========================================="
-Write-Info ""
-Write-Info "To import additional users from CSV, use:"
-Write-Info "  Import-AdministrativeUsersFromCSV -CSVPath 'path\to\adminusers.csv'"
-Write-Info ""
-Write-Info "CSV Format Required:"
-Write-Info "  LastName,FirstName,MiddleName,Office,Gender"
-Write-Info "  SMITH,JOHN,PAUL,Registrars-Office,M"
+
 Write-Info ""
 Write-Info "Log file: $LogFile"
+
+# Automatically create admin users from the split student list (created by 01_CreateAcademicUsers.ps1)
+Write-Info ""
+Write-Info "=========================================="
+Write-Info "Creating administrative users from student list"
+Write-Info "=========================================="
+Write-Info ""
+
+# First, try to use ADMIN_STUDENTS.txt if it exists (created by 01_CreateAcademicUsers.ps1)
+if (Test-Path $AdminStudentsFile) {
+    Write-Info "Reading administrative students from: $AdminStudentsFile"
+    $adminLines = @(Get-Content $AdminStudentsFile)
+    if ($adminLines -and $adminLines.Count -gt 0) {
+        Create-AdministrativeUsersFromStudentLines $adminLines
+    }
+    else {
+        Write-Warning "No student records found in $AdminStudentsFile"
+    }
+}
+else {
+    Write-Warning "Admin student file not found: $AdminStudentsFile"
+    Write-Info "Attempting alternate approach: Using remaining students from ALL_STUDENTS.txt..."
+    
+    # Fallback: Read from ALL_STUDENTS.txt and use the last portion for admin users
+    $AllStudentsFile = "Reference Data\ALL_STUDENTS.txt"
+    if (Test-Path $AllStudentsFile) {
+        $allStudentsLines = @(Get-Content $AllStudentsFile)
+        if ($allStudentsLines -and $allStudentsLines.Count -gt 0) {
+            Write-Info "Total students in ALL_STUDENTS.txt: $($allStudentsLines.Count)"
+            
+            # Reserve students for administrative accounts (typically 10-20% of total or a fixed number)
+            $totalStudents = $allStudentsLines.Count
+            $academicStudentCount = [Math]::Ceiling($totalStudents * 0.8) # 80% for academic
+            $reservedForAdmins = $totalStudents - $academicStudentCount
+            
+            if ($reservedForAdmins -gt 0) {
+                # Get the last N students for administrative use
+                $adminStudents = @($allStudentsLines[(-$reservedForAdmins)..-1])
+                Write-Info "Reserved $reservedForAdmins students for administrative assignment"
+                Create-AdministrativeUsersFromStudentLines $adminStudents
+            }
+            else {
+                Write-Warning "Not enough students to reserve for administrative accounts."
+            }
+        }
+        else {
+            Write-Error-Log "ALL_STUDENTS.txt is empty or unreadable"
+        }
+    }
+    else {
+        Write-Error-Log "Neither admin student file nor all students file found!"
+        Write-Info "Please run 00_CreateOrganizationalUnits.ps1 first, then 01_CreateAcademicUsers.ps1"
+    }
+}

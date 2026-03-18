@@ -34,7 +34,7 @@ foreach ($ouObj in $rootOUs) {
     if (-not $ouExists) {
         try {
             New-ADOrganizationalUnit -Name $ouObj.Name -Path $ouObj.Path
-            Write-Success "✓ Created OU: $($ouObj.Name)"
+            Write-Success "Created OU: $($ouObj.Name)"
         }
         catch {
             Write-Warning "! OU may already exist: $($ouObj.Name)"
@@ -104,7 +104,7 @@ foreach ($dept in $academicDepartments) {
     if (-not $deptExists) {
         try {
             New-ADOrganizationalUnit -Name $dept.Name -Path $dept.Path
-            Write-Success "  ✓ Created Department: $($dept.DisplayName)"
+            Write-Success "  Created Department: $($dept.DisplayName)"
         }
         catch {
             Write-Warning "  ! Department may already exist: $($dept.Name)"
@@ -118,7 +118,7 @@ foreach ($dept in $academicDepartments) {
         if (-not $progExists) {
             try {
                 New-ADOrganizationalUnit -Name $program -Path $deptPath
-                Write-Success "      ✓ Created Program: $program"
+                Write-Success "      Created Program: $program"
             }
             catch {
                 Write-Warning "      ! Program may already exist: $program"
@@ -151,7 +151,7 @@ foreach ($office in $adminOffices) {
     if (-not $officeExists) {
         try {
             New-ADOrganizationalUnit -Name $office -Path $adminPath
-            Write-Success "  ✓ Created Office: $office"
+            Write-Success "  Created Office: $office"
         }
         catch {
             Write-Warning "  ! Office may already exist: $office"
@@ -177,7 +177,7 @@ foreach ($group in $groups) {
     if (-not $groupExists) {
         try {
             New-ADGroup -Name $group.Name -GroupCategory $group.GroupCategory -GroupScope $group.GroupScope -Path $groupPath -Description $group.Description
-            Write-Success "  ✓ Created Group: $($group.Name)"
+            Write-Success "  Created Group: $($group.Name)"
         }
         catch {
             Write-Warning "  ! Group may already exist: $($group.Name)"
@@ -187,7 +187,7 @@ foreach ($group in $groups) {
 
 Write-Info ""
 Write-Info "================================================"
-Write-Success "✓ Organizational Unit Structure Created Successfully!"
+Write-Success "Organizational Unit Structure Created Successfully!"
 Write-Info "================================================"
 Write-Info ""
 Write-Info "Next Steps:"

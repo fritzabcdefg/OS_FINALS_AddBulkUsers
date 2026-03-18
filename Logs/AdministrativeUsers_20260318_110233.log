@@ -1,0 +1,41 @@
+INFO: ==========================================
+INFO: Creating Administrative Department Users
+INFO: Domain: tupt.edu.ph
+INFO: ==========================================
+INFO: 
+INFO: Creating security groups for administrative offices...
+WARNING:   ! Group creation failed: Registrars-Office-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+WARNING:   ! Group creation failed: Directors-Office-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+WARNING:   ! Group creation failed: Research-Extension-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+WARNING:   ! Group creation failed: HR-Management-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+WARNING:   ! Group creation failed: Finance-Office-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+WARNING:   ! Group creation failed: Supply-Procurement-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+WARNING:   ! Group creation failed: Records-Office-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+WARNING:   ! Group creation failed: Library-Services-Users - The term 'New-ADGroup' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+INFO: 
+INFO: ==========================================
+INFO: Administrative User Creation Instructions
+INFO: ==========================================
+INFO: 
+INFO: AUTOMATIC WORKFLOW (recommended):
+INFO:   1. Run 01_CreateAcademicUsers.ps1 first
+INFO:      - Creates 250 academic users
+INFO:      - Saves remaining ~67 students to Reference Data\ADMIN_STUDENTS.txt
+INFO: 
+INFO:   2. Run this script (02_CreateAdministrativeUsers.ps1)
+INFO:      - Automatically creates admin users from ADMIN_STUDENTS.txt
+INFO:      - Distributes ~8-9 users per office (67 / 8 offices)
+INFO: 
+INFO: 
+INFO: ==========================================
+INFO: Administrative infrastructure created!
+INFO: ==========================================
+INFO: 
+INFO: Log file: Logs\AdministrativeUsers_20260318_110233.log
+INFO: 
+INFO: ==========================================
+INFO: Creating administrative users from student list
+INFO: ==========================================
+INFO: 
+WARNING: Admin student file not found: Reference Data\ADMIN_STUDENTS.txt
+INFO: Note: Run 01_CreateAcademicUsers.ps1 first to generate this file.
